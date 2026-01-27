@@ -1,0 +1,36 @@
+.INCLUDE "M328PDEF.INC"  
+.DEF Clave = R23
+.ORG 0
+.CSEG 
+
+LDI R16, 0
+OUT DDRC,R16
+LDI R16, 15
+OUT PORTC, R16
+
+LDI R16, 255
+OUT DDRB, R16
+LDI R16, 0
+OUT PORTB, R16
+
+
+leer:
+	LDI Clave, 0
+	IN Clave, PinC
+	CPI Clave, 0b00011011
+	BREQ encender 
+	CBI PortB, 0 ;pone un 0 en el led verde
+	SBI PortB, 1 ;pone 1 en led rojo
+	CBI PortB, 2 ;pone 0 en el buzzer
+	Rjmp leer
+
+encender:
+	SBI PortB, 0
+	CBI Portb, 1
+	SBI PortB, 2
+
+	Rjmp leer
+
+infinito:
+	NOP
+	Rjmp infinito
