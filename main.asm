@@ -26,10 +26,33 @@ MAIN:
 	CBI EIFR, INTF0 ; borrar banderas de interrupcion
 	SEI ; habilitar interrupciones globales
 
+ESPERAR:
+	RJMP ESPERAR
+
 ISR_INT0:
 
+ALARMA:
+	LDI R20, 0B00100001
+    OUT PORTB, R20      ; Encender LED y Buzzer
+    RCALL DELAY_100MS   ; Esperar 100ms
+	
+	SBIS PIND, PD5 ; SALTA SI EL BOTON DE SALIR ESTA ON
+	RJMP SALIR_ALARMA 
+
+    
+    LDI R20, 0
+    OUT PORTB, R20      ; Apagar LED y Buzzer
+    RCALL DELAY_100MS   ; Esperar 
+
+SALIR_ALARMA:
+	LDI R21, 0; ASEGURA QUE SE APAGUE LA ALARMA
+	OUT PORTB, R21
+	RCALL RETARDO
+	RETI
+
+
 RETARDO:
-	LDI R22, 8
+	LDI R22, 8 ; retardo de 100ms
 I1:	
 	LDI R23, 255
 I2:
