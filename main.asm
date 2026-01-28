@@ -6,19 +6,23 @@
 ;
 .INCLUDE "m328PDEF.INC"
 .ORG 0
+	RJMP MAIN
+.ORG 2
+    RJMP ISR_INT0
 .CSEG
 
 MAIN:
 
+
 	LDI R16, 0
 	LDI R17, 255
-	LDI R18, 12
+	LDI R18, 0B00100100
 	LDI R19, 3
 
 	OUT DDRD, R16 ; puerto D entrada
-	OUT PORTD, R18 ; activar pullup en PD2 ; y PD3
+	OUT PORTD, R18 ; activar pullup en PD2 ; y PD5
 	OUT DDRB, R17 ; puerto B salida
-	OUT PORTB, R16 ; valor inicial cero
+	OUT PORTB, R16 ; valor inicial cero ///////////
 
 	STS EICRA, R19 ; confg INT0 en flanco ascendente
 	SBI EIMSK, INT0 ; habilitar INT0
@@ -34,7 +38,7 @@ ISR_INT0:
 ALARMA:
 	LDI R20, 0B00100001
     OUT PORTB, R20      ; Encender LED y Buzzer
-    RCALL DELAY_100MS   ; Esperar 100ms
+    RCALL RETARDO   ; Esperar 100ms
 	
 	SBIS PIND, PD5 ; SALTA SI EL BOTON DE SALIR ESTA ON
 	RJMP SALIR_ALARMA 
@@ -42,7 +46,10 @@ ALARMA:
     
     LDI R20, 0
     OUT PORTB, R20      ; Apagar LED y Buzzer
-    RCALL DELAY_100MS   ; Esperar 
+    RCALL RETARDO   ; Esperar 
+	SBIS PIND, PD5
+	RJMP SALIR_ALARMA
+	RJMP ALARMA
 
 SALIR_ALARMA:
 	LDI R21, 0; ASEGURA QUE SE APAGUE LA ALARMA
